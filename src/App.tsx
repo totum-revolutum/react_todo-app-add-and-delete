@@ -10,6 +10,7 @@ import { Footer } from './component/Footer/Footer';
 import { Errors } from './component/Errors/Errors';
 import { GroupStatusTypes } from './types/status';
 import { ErrorMessage } from './types/errorMessage';
+import { getFilteredTodos } from './utils/todoHelpers';
 
 interface TodoFilterProps {
   filteredStatus?: GroupStatusTypes;
@@ -48,7 +49,7 @@ export const App: React.FC<TodoFilterProps> = () => {
         );
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage(ErrorMessage.UNABLE_TO_DELETE);
       })
       .finally(() => {
         setIdTodo(prev => prev.filter(id => id !== todoId));
@@ -58,7 +59,6 @@ export const App: React.FC<TodoFilterProps> = () => {
   function onCreateTodo(newToDo: Todo) {
     const todoTrim = { ...newToDo, title: newToDo.title.trim() };
 
-    // setTodos(currentTodos => [...currentTodos, { ...newTodo }]);
     setTempTodo(todoTrim);
 
     return createTodo(todoTrim)
@@ -66,7 +66,7 @@ export const App: React.FC<TodoFilterProps> = () => {
         setTodos(currentTodos => [...currentTodos, todo]);
       })
       .catch(error => {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage(ErrorMessage.UNABLE_TO_ADD);
         throw error;
       })
       .finally(() => {
@@ -99,22 +99,7 @@ export const App: React.FC<TodoFilterProps> = () => {
       });
   }
 
-  function getFilteredTodos(todosForFilter: Todo[]) {
-    switch (status) {
-      case GroupStatusTypes.ALL:
-        return todosForFilter;
-      case GroupStatusTypes.ACTIVE:
-        return todosForFilter.filter(todo => !todo.completed);
-
-      case GroupStatusTypes.COMPLETED:
-        return todosForFilter.filter(todo => todo.completed);
-
-      default:
-        return todosForFilter;
-    }
-  }
-
-  const filteredTodos = getFilteredTodos(todos);
+  const filteredTodos = getFilteredTodos(todos, status);
   const currentTodos = [...filteredTodos];
 
   if (tempTodo) {
@@ -159,17 +144,3 @@ export const App: React.FC<TodoFilterProps> = () => {
     </div>
   );
 };
-
-// async function clearCompletedTodo() {
-//   completedItems.map(async todo => {
-//     await deleteTodo(todo.id)
-//       .then(() => {
-//         setTodos(currentTodos => {
-//           return currentTodos.filter(item => item.id !== todo.id);
-//         });
-//       })
-//       .catch(() => {
-//         setErrorMessage('Unable to delete a todo');
-//       });
-//   });
-// }

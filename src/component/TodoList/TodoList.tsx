@@ -17,9 +17,9 @@ export const ToDoList: React.FC<Props> = ({ todos, onDelete, idTodo }) => {
           key={id}
         >
           {/* eslint-disable jsx-a11y/label-has-associated-control  */}
-          <label className="todo__status-label" htmlFor={'' + id}>
+          <label className="todo__status-label" htmlFor={String(id)}>
             <input
-              id={'' + id}
+              id={String(id)}
               data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
